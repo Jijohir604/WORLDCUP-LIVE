@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIFA World Cup 2026 Live Score</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+}
+
+/* HEADER */
+header{
+    background:#0a2342;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+header h1{margin:0;font-size:28px;}
+
+/* CONTAINER */
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:15px;
+}
+
+/* SECTION TITLE */
+.section-title{
+    font-size:20px;
+    margin:15px 0;
+    font-weight:bold;
+    color:#0a2342;
+}
+
+/* MATCH CARD */
+.match-card{
+    background:white;
+    padding:15px;
+    margin-bottom:12px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
+.match-card:hover{
+    transform:scale(1.01);
+}
+
+/* TEAMS */
+.teams{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.team{
+    width:40%;
+    text-align:center;
+    font-weight:bold;
+    font-size:18px;
+}
+
+/* SCORE */
+.score{
+    font-size:26px;
+    font-weight:bold;
+    color:#e63946;
+}
+
+/* STATUS */
+.status{
+    text-align:center;
+    margin-top:8px;
+    font-weight:bold;
+    padding:5px;
+    border-radius:5px;
+}
+
+/* LIVE COLORS */
+.live{color:red;}
+.ft{color:green;}
+.ns{color:#555;}
+
+/* TABLE */
+table{
+    width:100%;
+    background:white;
+    border-collapse:collapse;
+    border-radius:10px;
+    overflow:hidden;
+}
+th,td{
+    padding:10px;
+    text-align:center;
+    border-bottom:1px solid #ddd;
+}
+
+/* AD */
+.ad{
+    background:#ddd;
+    text-align:center;
+    padding:25px;
+    border-radius:10px;
+}
+
+/* FOOTER */
+footer{
+    background:#0a2342;
+    color:white;
+    text-align:center;
+    padding:15px;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🏆 FIFA World Cup 2026</h1>
+    <p>Live Score in Bangla</p>
+</header>
+
+<div class="container">
+
+    <div class="section-title">🔥 Live Matches</div>
+    <div id="matches">লোড হচ্ছে...</div>
+
+    <div class="section-title">📊 Points Table</div>
+    <table>
+        <tr>
+            <th>Team</th>
+            <th>Played</th>
+            <th>Points</th>
+        </tr>
+        <tr>
+            <td>Argentina</td>
+            <td>3</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>Brazil</td>
+            <td>3</td>
+            <td>6</td>
+        </tr>
+    </table>
+
+    <div class="section-title">📢 Advertisement</div>
+    <div class="ad">Your Ad Here</div>
+
+</div>
+
+<footer>
+    © 2026 World Cup Live Score
+</footer>
+
+<script>
+
+const API_KEY = "YOUR_API_KEY";
+
+async function loadMatches(){
+
+    try{
+
+        const res = await fetch(
+        "https://v3.football.api-sports.io/fixtures?season=2026",
+        {
+            headers:{
+                "x-apisports-key": API_KEY
+            }
+        });
+
+        const data = await res.json();
+
+        let html = "";
+
+        if(!data.response || data.response.length === 0){
+            html = "<p>No matches available</p>";
+        }
+
+        data.response.slice(0,10).forEach(m => {
+
+            let status = m.fixture.status.short;
+
+            let statusClass = "ns";
+            if(status === "LIVE" || status === "1H" || status === "2H") statusClass = "live";
+            if(status === "FT") statusClass = "ft";
+
+            html += `
+            <div class="match-card">
+
+                <div class="teams">
+                    <div class="team">${m.teams.home.name}</div>
+
+                    <div class="score">
+                        ${m.goals.home ?? 0} - ${m.goals.away ?? 0}
+                    </div>
+
+                    <div class="team">${m.teams.away.name}</div>
+                </div>
+
+                <div class="status ${statusClass}">
+                    ${m.fixture.status.long}
+                </div>
+
+            </div>`;
+        });
+
+        document.getElementById("matches").innerHTML = html;
+
+    }catch(e){
+
+        // DEMO DATA (API fail হলে দেখাবে)
+        document.getElementById("matches").innerHTML = `
+        <div class="match-card">
+            <div class="teams">
+                <div class="team">Argentina</div>
+                <div class="score">2 - 1</div>
+                <div class="team">Brazil</div>
+            </div>
+            <div class="status live">LIVE</div>
+        </div>
+        `;
+    }
+}
+
+loadMatches();
+setInterval(loadMatches, 15000); // 15 sec refresh
+
+</script>
+
+</body>
+</html>
